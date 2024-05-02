@@ -1,12 +1,8 @@
 <?php
 session_start();
-
-// Database connection
-$pdo = new PDO(
-    'mysql:host=localhost;dbname=tiendaonline',
-    'root',
-    ''
-);
+require_once 'User.php';
+//Creamos un nuevo usuario
+$usern = new User();
 
 // Function to validate user input
 function validateInput($data) {
@@ -24,16 +20,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = validateInput($_POST['contraseña']);
 
     // Query the database to fetch user data
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario= ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch();
+    $user = $usern->loginUser($username, $password);
 
     // Verify user credentials
     if ($user && password_verify($password, $user['contrasenia'])) {
         // Set session variables
         $_SESSION['username'] = $username;
         // Redirect to dashboard
-        header("Location: dashboard.php");
+        header("Location: pagina.php");
         exit();
     } else {
         // Invalid username or password
